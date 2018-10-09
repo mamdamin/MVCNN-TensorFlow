@@ -18,7 +18,7 @@ A specific model is implemented:
 
 ## Data preparation
 
-You need to prepare the rendered views data for 3D shapes. We use ModelNet40 for example. Every 3D shape is rendered in phong-shading with no texture, in white color over black background, elevation of 30 degree, and 12 azimuths every 30 degree. 
+You need to prepare the rendered views data for 3D shapes. We use ModelNet40 for example. Every 3D shape is rendered in phong-shading with no texture, in white color over black background, elevation of 30 degree, and 12 azimuths every 30 degree.
 
 Every 3D shape is defined in a text file. See data\_sample/view/list/train/airplane/airplane_0001.off.txt for example. The first line is category id, starting from 0. The second line is number of views, default 12. And the following 12 lines are image files of the 12 views.
 
@@ -57,13 +57,3 @@ $ python test.py --weights=`pwd`/tmp/model.ckpt-N
 
 # License
 MIT
-<<<<<<< HEAD
-=======
-python train.py --train_dir=D:\tmp\MV_CNN_Training --learning_rate=0.0001
-
-python "D:\OneDrive - University of Iowa\Python\TensorFlow\MVCNN-TensorFlow-master\train.py" --caffemodel="D:\OneDrive - University of Iowa\Python\TensorFlow\MVCNN-TensorFlow-master\alexnet_imagenet.npy" --train_dir=D:\tmp\MV_CNN_Training --weights=D:\tmp\MV_CNN_Training\model.ckpt-1000 --learning_rate=0.0001
-
-python "D:\OneDrive - University of Iowa\Python\TensorFlow\MVCNN-TensorFlow-master\train.py" --train_dir=D:\tmp\MV_CNN_Training --learning_rate=0.0001
-
-tensorboard --logdir=d:\tmp\MV_CNN_Training
->>>>>>> Initial. works fine

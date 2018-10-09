@@ -32,20 +32,13 @@ np.set_printoptions(precision=3)
 
 
 def test(dataset, ckptfile):
-<<<<<<< HEAD
-    print 'test() called'
-=======
+
     print('test() called')
->>>>>>> Initial. works fine
     V = g_.NUM_VIEWS
     batch_size = FLAGS.batch_size
 
     data_size = dataset.size()
-<<<<<<< HEAD
-    print 'dataset size:', data_size
-=======
     print('dataset size:', data_size)
->>>>>>> Initial. works fine
 
     with tf.Graph().as_default():
         startstep = 0
@@ -73,16 +66,9 @@ def test(dataset, ckptfile):
         predictions = []
         labels = []
 
-<<<<<<< HEAD
-        print "Start testing"
-        print "Size:", data_size
-        print "It'll take", int(math.ceil(data_size/batch_size)), "iterations."
-=======
         print("Start testing")
         print("Size:", data_size)
         print("It'll take", int(math.ceil(data_size/batch_size)), "iterations.")
->>>>>>> Initial. works fine
-
         for batch_x, batch_y in dataset.batches(batch_size):
             step += 1
 
@@ -112,29 +98,16 @@ def test(dataset, ckptfile):
         # print labels
         # print predictions
         acc = metrics.accuracy_score(labels, predictions)
-<<<<<<< HEAD
-        print 'acc:', acc*100
-=======
         print('acc:', acc*100)
->>>>>>> Initial. works fine
 
 
 def main(argv):
     st = time.time()
-<<<<<<< HEAD
-    print 'start loading data'
-=======
     print('start loading data')
->>>>>>> Initial. works fine
 
     listfiles, labels = read_lists(g_.TEST_LOL)
     dataset = Dataset(listfiles, labels, subtract_mean=False, V=g_.NUM_VIEWS)
-
-<<<<<<< HEAD
-    print 'done loading data, time=', time.time() - st
-=======
     print('done loading data, time=', time.time() - st)
->>>>>>> Initial. works fine
 
     test(dataset, FLAGS.weights)
 
@@ -147,5 +120,3 @@ def read_lists(list_of_lists_file):
 
 if __name__ == '__main__':
     main(sys.argv)
-
-

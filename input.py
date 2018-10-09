@@ -1,13 +1,5 @@
 import cv2
-<<<<<<< HEAD
-import random
-import numpy as np
-import time
-import Queue
-import threading
-import globals as g_
-from concurrent.futures import ThreadPoolExecutor
-=======
+
 from PIL import Image
 import random
 import numpy as np
@@ -18,7 +10,6 @@ import globals as g_
 from concurrent.futures import ThreadPoolExecutor
 from augment import augmentImages
 import tensorflow as tf
->>>>>>> Initial. works fine
 
 W = H = 256
 
@@ -36,11 +27,6 @@ class Shape:
     def _load_views(self, view_files, V):
         views = []
         for f in view_files:
-<<<<<<< HEAD
-            im = cv2.imread(f)
-            im = cv2.resize(im, (W, H))
-            # im = cv2.cvtColor(im, cv2.COLOR_GRAY2BGR) #BGR!!
-=======
             im = cv2.imread(f)            #im = Image.open(f)#cv2.imread(f)
             #im = cv2.resize(im, (W, H))
             #im = im*500.0
@@ -48,25 +34,22 @@ class Shape:
             #print('Shape: {}, Min: {}, Max: {}, Mean: {}'.format(im.shape,np.amin(im),np.amax(im),np.mean(im)))
             #halt
             #im = cv2.cvtColor(im, cv2.COLOR_GRAY2BGR) #BGR!!
-         
->>>>>>> Initial. works fine
+
             assert im.shape == (W,H,3), 'BGR!'
             im = im.astype('float32')
             views.append(im)
         views = np.asarray(views)
-<<<<<<< HEAD
-=======
+
         '''
         print('Input: ', views.dtype)
         with tf.Session() as sess:
             with tf.device('/cpu:0'):
-                views = augmentImages(views, 
+                views = augmentImages(views,
                     horizontal_flip=True, vertical_flip=True, translate = 64, rotate=20, crop_probability=0, mixup=0)
             views = sess.run(views)
-        
-        print('Output: ', views.dtype)        
+
+        print('Output: ', views.dtype)
         '''
->>>>>>> Initial. works fine
         return views
 
     def subtract_mean(self):
@@ -80,18 +63,12 @@ class Shape:
     def crop_center(self, size=(227,227)):
         w, h = self.views.shape[1], self.views.shape[2]
         wn, hn = size
-<<<<<<< HEAD
-        left = w / 2 - wn / 2
-        top = h / 2 - hn / 2
-        right = left + wn
-        bottom = top + hn
-=======
+
         left = int(w / 2 - wn / 2)
         top = int(h / 2 - hn / 2)
         right = left + wn
         bottom = top + hn
         #print(left,right,top,bottom)
->>>>>>> Initial. works fine
         self.views = self.views[:, left:right, top:bottom, :]
 
 
@@ -102,19 +79,12 @@ class Dataset:
         self.shuffled = False
         self.subtract_mean = subtract_mean
         self.V = V
-<<<<<<< HEAD
-        print 'dataset inited'
-        print '  total size:', len(listfiles)
 
-    def shuffle(self):
-        z = zip(self.listfiles, self.labels)
-=======
         print('dataset inited')
         print('  total size:', len(listfiles))
 
     def shuffle(self):
         z = list(zip(self.listfiles, self.labels))
->>>>>>> Initial. works fine
         random.shuffle(z)
         self.listfiles, self.labels = [list(l) for l in zip(*z)]
         self.shuffled = True
@@ -131,11 +101,7 @@ class Dataset:
 
     def _batches(self, listfiles, batch_size):
         n = len(listfiles)
-<<<<<<< HEAD
-        for i in xrange(0, n, batch_size):
-=======
         for i in range(0, n, batch_size):
->>>>>>> Initial. works fine
             starttime = time.time()
 
             lists = listfiles[i : i+batch_size]
@@ -150,11 +116,7 @@ class Dataset:
                 x[j, ...] = s.views
                 y[j] = s.label
 
-<<<<<<< HEAD
-            print 'load batch time:', time.time()-starttime, 'sec'
-=======
             print('load batch time:', time.time()-starttime, 'sec')
->>>>>>> Initial. works fine
             yield x, y
 
     def _load_shape(self, listfile):
@@ -170,11 +132,7 @@ class Dataset:
 
         def load(listfiles, q, batch_size):
             n = len(listfiles)
-<<<<<<< HEAD
-            with ThreadPoolExecutor(max_workers=16) as pool:
-=======
             with ThreadPoolExecutor(max_workers=32) as pool:
->>>>>>> Initial. works fine
                 for i in range(0, n, batch_size):
                     sub = listfiles[i: i + batch_size] if i < n-1 else [listfiles[-1]]
                     shapes = list(pool.map(self._load_shape, sub))
@@ -198,11 +156,7 @@ class Dataset:
         x = np.zeros((batch_size, self.V, 227, 227, 3))
         y = np.zeros(batch_size)
 
-<<<<<<< HEAD
-        for i in xrange(0, n, batch_size):
-=======
         for i in range(0, n, batch_size):
->>>>>>> Initial. works fine
             starttime = time.time()
 
             item = q.get()
@@ -210,15 +164,9 @@ class Dataset:
                 break
             x, y = item
 
-<<<<<<< HEAD
-            # print 'load batch time:', time.time()-starttime, 'sec'
-=======
             # print('load batch time:', time.time()-starttime, 'sec')
->>>>>>> Initial. works fine
             yield x, y
 
     def size(self):
         """ size of listfiles (if splitted, only count 'train', not 'val')"""
         return len(self.listfiles)
-
-
