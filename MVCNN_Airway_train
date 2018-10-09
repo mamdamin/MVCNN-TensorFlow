@@ -1,0 +1,9 @@
+#!/bin/sh
+
+module load tensorflow/1.7.0_cuda-9.0.176.1_python-3.6.4
+module load opencv/3.2.0_python-3.6.4
+
+python ~/MVCNN-TensorFlow-master/train.py --caffemodel=/Users/amotahari/MVCNN-TensorFlow-master/alexnet_imagenet.npy --weights=/Shared/CTmechanics_COPDGene/Amin/MV_CNN_Training/model.ckpt-$1 --train_dir=/Shared/CTmechanics_COPDGene/Amin/MV_CNN_Training --learning_rate=0.0000001
+
+# --weights=/Shared/CTmechanics_COPDGene/Amin/MV_CNN_Training/model.ckpt-370000
+# --caffemodel=/Users/amotahari/MVCNN-TensorFlow-master/alexnet_imagenet.npy

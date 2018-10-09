@@ -4,15 +4,27 @@ import tensorflow as tf
 import time
 from datetime import datetime
 import os
+<<<<<<< HEAD
 import hickle as hkl
 import os.path as osp
 from glob import glob
 import sklearn.metrics as metrics
+=======
+#import hickle as hkl
+import os.path as osp
+from glob import glob
+import sklearn.metrics as metrics
+import shutil
+>>>>>>> Initial. works fine
 
 from input import Dataset
 import globals as g_
 
+<<<<<<< HEAD
 
+=======
+CHANNELS = 3
+>>>>>>> Initial. works fine
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
@@ -33,6 +45,7 @@ np.set_printoptions(precision=3)
 
 
 def train(dataset_train, dataset_val, ckptfile='', caffemodel=''):
+<<<<<<< HEAD
     print 'train() called'
     is_finetune = bool(ckptfile)
     V = g_.NUM_VIEWS
@@ -42,6 +55,17 @@ def train(dataset_train, dataset_val, ckptfile='', caffemodel=''):
     dataset_val.shuffle()
     data_size = dataset_train.size()
     print 'training size:', data_size
+=======
+    print('train() called')
+    is_finetune = bool(ckptfile)
+    V = g_.NUM_VIEWS
+    batch_size = FLAGS.batch_size
+    print('Batch Size = ', batch_size)
+    dataset_train.shuffle()
+    dataset_val.shuffle()
+    data_size = dataset_train.size()
+    print('training size:', data_size)
+>>>>>>> Initial. works fine
 
 
     with tf.Graph().as_default():
@@ -49,10 +73,17 @@ def train(dataset_train, dataset_val, ckptfile='', caffemodel=''):
         global_step = tf.Variable(startstep, trainable=False)
          
         # placeholders for graph input
+<<<<<<< HEAD
         view_ = tf.placeholder('float32', shape=(None, V, 227, 227, 3), name='im0')
         y_ = tf.placeholder('int64', shape=(None), name='y')
         keep_prob_ = tf.placeholder('float32')
 
+=======
+        view_ = tf.placeholder('float32', shape=(None, V, 227, 227, CHANNELS), name='im0')
+        y_ = tf.placeholder('int64', shape=(None), name='y')
+        keep_prob_ = tf.placeholder('float32')
+            
+>>>>>>> Initial. works fine
         # graph outputs
         fc8 = model.inference_multiview(view_, g_.NUM_CLASSES, keep_prob_)
         loss = model.loss(fc8, y_)
@@ -69,42 +100,79 @@ def train(dataset_train, dataset_val, ckptfile='', caffemodel=''):
         validation_acc = tf.placeholder('float32', shape=(), name='validation_accuracy')
         validation_acc_summary = tf.summary.scalar('validation_accuracy', validation_acc)
 
+<<<<<<< HEAD
         saver = tf.train.Saver(tf.all_variables(), max_to_keep=1000)
 
         init_op = tf.global_variables_initializer()
+=======
+        saver = tf.train.Saver(tf.global_variables(), max_to_keep=1000) ##Amin
+
+        init_op = tf.global_variables_initializer()
+        
+        ##Amin
+        variables_names = [v.name for v in tf.trainable_variables()]
+        print('Trainable Variables: \n',variables_names)
+        
+>>>>>>> Initial. works fine
         sess = tf.Session(config=tf.ConfigProto(log_device_placement=FLAGS.log_device_placement))
         
         if is_finetune:
             # load checkpoint file
             saver.restore(sess, ckptfile)
+<<<<<<< HEAD
             print 'restore variables done'
+=======
+            print('restore variables done')
+>>>>>>> Initial. works fine
         elif caffemodel:
             # load caffemodel generated with caffe-tensorflow
             sess.run(init_op)
             model.load_alexnet_to_mvcnn(sess, caffemodel)
+<<<<<<< HEAD
             print 'loaded pretrained caffemodel:', caffemodel
         else:
             # from scratch
             sess.run(init_op)
             print 'init_op done'
+=======
+            print('loaded pretrained caffemodel:', caffemodel)
+        else:
+            # from scratch
+            sess.run(init_op)
+            print('init_op done')
+>>>>>>> Initial. works fine
 
         summary_writer = tf.summary.FileWriter(FLAGS.train_dir,
                                                graph=sess.graph) 
 
         step = startstep
+<<<<<<< HEAD
         for epoch in xrange(100):
             print 'epoch:', epoch
+=======
+        for epoch in range(10000):
+            print('epoch:', epoch)
+>>>>>>> Initial. works fine
 
             for batch_x, batch_y in dataset_train.batches(batch_size):
                 step += 1
 
                 start_time = time.time()
+<<<<<<< HEAD
+=======
+
+                    
+>>>>>>> Initial. works fine
                 feed_dict = {view_: batch_x,
                              y_ : batch_y,
                              keep_prob_: 0.5 }
 
                 _, pred, loss_value = sess.run(
+<<<<<<< HEAD
                         [train_op, prediction,  loss,],
+=======
+                        [train_op, prediction,  loss],##Amin
+>>>>>>> Initial. works fine
                         feed_dict=feed_dict)
 
                 duration = time.time() - start_time
@@ -114,6 +182,7 @@ def train(dataset_train, dataset_val, ckptfile='', caffemodel=''):
                 # print training information
                 if step % 10 == 0 or step - startstep <= 30:
                     sec_per_batch = float(duration)
+<<<<<<< HEAD
                     print '%s: step %d, loss=%.2f (%.1f examples/sec; %.3f sec/batch)' \
                          % (datetime.now(), step, loss_value,
                                     FLAGS.batch_size/duration, sec_per_batch)
@@ -124,23 +193,51 @@ def train(dataset_train, dataset_val, ckptfile='', caffemodel=''):
                     val_losses = []
                     predictions = np.array([])
                     
+=======
+                    print('%s: step %d, loss=%.2f (%.1f examples/sec; %.3f sec/batch)' \
+                         % (datetime.now(), step, loss_value,
+                                    FLAGS.batch_size/duration, sec_per_batch))
+
+                        
+                # validation
+                if step % g_.VAL_PERIOD == 0 and step > 0:
+                    val_losses = []
+                    predictions = np.array([])
+                    val_outputs = np.empty([0, 2])
+>>>>>>> Initial. works fine
                     val_y = []
                     for val_step, (val_batch_x, val_batch_y) in \
                             enumerate(dataset_val.sample_batches(batch_size, g_.VAL_SAMPLE_SIZE)):
                         val_feed_dict = {view_: val_batch_x,
                                          y_  : val_batch_y,
                                          keep_prob_: 1.0 }
+<<<<<<< HEAD
                         val_loss, pred = sess.run([loss, prediction], feed_dict=val_feed_dict)
                         val_losses.append(val_loss)
+=======
+                        val_output, val_loss, pred = sess.run([fc8, loss, prediction], feed_dict=val_feed_dict)
+                        val_losses.append(val_loss)
+                        val_outputs = np.vstack((val_outputs,val_output))
+>>>>>>> Initial. works fine
                         predictions = np.hstack((predictions, pred))
                         val_y.extend(val_batch_y)
 
                     val_loss = np.mean(val_losses)
                     
                     acc = metrics.accuracy_score(val_y[:predictions.size], np.array(predictions))
+<<<<<<< HEAD
                     print '%s: step %d, validation loss=%.4f, acc=%f' %\
                             (datetime.now(), step, val_loss, acc*100.)
 
+=======
+                    print('%s: step %d, validation loss=%.4f, acc=%f' %\
+                            (datetime.now(), step, val_loss, acc*100.))
+                    
+                    ##Amin
+                    print( np.column_stack((val_outputs,np.asarray(val_y[:predictions.size]).T))[:10,:])
+                    print(metrics.confusion_matrix(val_y[:predictions.size], np.array(predictions)))
+                    print(predictions.size,sum(val_y[:predictions.size]))
+>>>>>>> Initial. works fine
                     # validation summary
                     val_loss_summ = sess.run(validation_summary,
                             feed_dict={validation_loss: val_loss})
@@ -164,15 +261,26 @@ def train(dataset_train, dataset_val, ckptfile='', caffemodel=''):
 
 
 def main(argv):
+<<<<<<< HEAD
     st = time.time() 
     print 'start loading data'
+=======
+    #shutil.rmtree("D:/tmp/MV_CNN_Training",ignore_errors=True)
+    st = time.time() 
+    np.set_printoptions(threshold=np.nan)
+    print('start loading data')
+>>>>>>> Initial. works fine
 
     listfiles_train, labels_train = read_lists(g_.TRAIN_LOL)
     listfiles_val, labels_val = read_lists(g_.VAL_LOL)
     dataset_train = Dataset(listfiles_train, labels_train, subtract_mean=False, V=g_.NUM_VIEWS)
     dataset_val = Dataset(listfiles_val, labels_val, subtract_mean=False, V=g_.NUM_VIEWS)
 
+<<<<<<< HEAD
     print 'done loading data, time=', time.time() - st
+=======
+    print('done loading data, time=', time.time() - st)
+>>>>>>> Initial. works fine
 
     train(dataset_train, dataset_val, FLAGS.weights, FLAGS.caffemodel)
 

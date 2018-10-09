@@ -57,3 +57,13 @@ $ python test.py --weights=`pwd`/tmp/model.ckpt-N
 
 # License
 MIT
+<<<<<<< HEAD
+=======
+python train.py --train_dir=D:\tmp\MV_CNN_Training --learning_rate=0.0001
+
+python "D:\OneDrive - University of Iowa\Python\TensorFlow\MVCNN-TensorFlow-master\train.py" --caffemodel="D:\OneDrive - University of Iowa\Python\TensorFlow\MVCNN-TensorFlow-master\alexnet_imagenet.npy" --train_dir=D:\tmp\MV_CNN_Training --weights=D:\tmp\MV_CNN_Training\model.ckpt-1000 --learning_rate=0.0001
+
+python "D:\OneDrive - University of Iowa\Python\TensorFlow\MVCNN-TensorFlow-master\train.py" --train_dir=D:\tmp\MV_CNN_Training --learning_rate=0.0001
+
+tensorboard --logdir=d:\tmp\MV_CNN_Training
+>>>>>>> Initial. works fine

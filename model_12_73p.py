@@ -3,10 +3,7 @@ import tensorflow as tf
 import re
 import numpy as np
 import globals as g_
-<<<<<<< HEAD
-=======
 from augment import augmentImages
->>>>>>> Initial. works fine
 
 
 FLAGS = tf.app.flags.FLAGS
@@ -19,13 +16,8 @@ tf.app.flags.DEFINE_float('learning_rate', g_.INIT_LEARNING_RATE,
 
 # Constants describing the training process.
 MOVING_AVERAGE_DECAY = 0.9999     # The decay to use for the moving average.
-<<<<<<< HEAD
-NUM_EPOCHS_PER_DECAY = 350.0      # Epochs after which learning rate decays.
-LEARNING_RATE_DECAY_FACTOR = 0.1  # Learning rate decay factor.
-=======
-NUM_EPOCHS_PER_DECAY = 60.0       # Epochs after which learning rate decays. (350)
-LEARNING_RATE_DECAY_FACTOR = 1  # Learning rate decay factor.
->>>>>>> Initial. works fine
+NUM_EPOCHS_PER_DECAY = 50.0       # Epochs after which learning rate decays. (350)
+LEARNING_RATE_DECAY_FACTOR = 1.0  # Learning rate decay factor.
 WEIGHT_DECAY_FACTOR = 0.004 / 5. # 3500 -> 2.8
 
 TOWER_NAME = 'tower'
@@ -74,18 +66,12 @@ def _variable_with_weight_decay(name, shape, wd):
       Variable Tensor
     """
     var = _variable_on_cpu(name, shape,
-<<<<<<< HEAD
-                           initializer=tf.contrib.layers.xavier_initializer())
-    if wd:
-        weight_decay = tf.multiply(tf.nn.l2_loss(var), wd, name='weight_loss')
-=======
                             initializer=tf.contrib.layers.xavier_initializer(uniform=True))##Amin
                             #initializer=tf.random_normal_initializer()) #
                            
     if wd:
         #weight_decay = tf.multiply(tf.nn.l2_loss(var), wd, name='weight_loss')
         weight_decay = tf.multiply(tf.norm(var,ord=1), wd, name='weight_loss')
->>>>>>> Initial. works fine
         tf.add_to_collection('losses', weight_decay)
     return var
 
@@ -97,30 +83,11 @@ def _conv(name, in_ ,ksize, strides=[1,1,1,1], padding=DEFAULT_PADDING, group=1,
 
     with tf.variable_scope(name, reuse=reuse) as scope:
         if group == 1:
-<<<<<<< HEAD
             kernel = _variable_with_weight_decay('weights', shape=ksize, wd=0.0)
-            conv = convolve(in_, kernel)
-	else:
-            ksize[2] /= group
-            kernel = _variable_with_weight_decay('weights', shape=ksize, wd=0.0)
-	    input_groups = tf.split(in_, group, 3)
-	    kernel_groups = tf.split(kernel, group, 3)
-	    output_groups = [convolve(i, k) for i, k in zip(input_groups, kernel_groups)]
-	    # Concatenate the groups
-	    conv = tf.concat(output_groups, 3)
-
-        biases = _variable_on_cpu('biases', [n_kern], tf.constant_initializer(0.0))
-        conv = tf.nn.bias_add(conv, biases)
-        conv = tf.nn.relu(conv, name=scope.name)
-        _activation_summary(conv)
-
-    print name, conv.get_shape().as_list()
-=======
-            kernel = _variable_with_weight_decay('weights', shape=ksize, wd=0.1)
             conv = convolve(in_, kernel)
         else:
             ksize[2] /= group
-            kernel = _variable_with_weight_decay('weights', shape=ksize, wd=0.1)
+            kernel = _variable_with_weight_decay('weights', shape=ksize, wd=0.0)
         input_groups = tf.split(in_, group, 3)
         kernel_groups = tf.split(kernel, group, 3)
         output_groups = [convolve(i, k) for i, k in zip(input_groups, kernel_groups)]
@@ -133,49 +100,29 @@ def _conv(name, in_ ,ksize, strides=[1,1,1,1], padding=DEFAULT_PADDING, group=1,
         _activation_summary(conv)
 
     print(name, conv.get_shape().as_list())
->>>>>>> Initial. works fine
     return conv
 
 def _maxpool(name, in_, ksize, strides, padding=DEFAULT_PADDING):
     pool = tf.nn.max_pool(in_, ksize=ksize, strides=strides,
                           padding=padding, name=name)
 
-<<<<<<< HEAD
-    print name, pool.get_shape().as_list()
-    return pool
-
-def _fc(name, in_, outsize, dropout=1.0, reuse=False):
-=======
     print(name, pool.get_shape().as_list())
     return pool
 
 def _fc(name, in_, outsize, dropout=1, reuse=False):
->>>>>>> Initial. works fine
     with tf.variable_scope(name, reuse=reuse) as scope:
         # Move everything into depth so we can perform a single matrix multiply.
         
         insize = in_.get_shape().as_list()[-1]
-<<<<<<< HEAD
-        weights = _variable_with_weight_decay('weights', shape=[insize, outsize], wd=0.004)
-        biases = _variable_on_cpu('biases', [outsize], tf.constant_initializer(0.0))
-        fc = tf.nn.relu(tf.matmul(in_, weights) + biases, name=scope.name)
-=======
-        weights = _variable_with_weight_decay('weights', shape=[insize, outsize], wd=1)
+        weights = _variable_with_weight_decay('weights', shape=[insize, outsize], wd=0.01)
         biases = _variable_on_cpu('biases', [outsize], tf.constant_initializer(0.0)) ##Amin
         fc = tf.nn.leaky_relu(tf.matmul(in_, weights) + biases, name=scope.name)
->>>>>>> Initial. works fine
         fc = tf.nn.dropout(fc, dropout)
 
         _activation_summary(fc)
 
     
 
-<<<<<<< HEAD
-    print name, fc.get_shape().as_list()
-    return fc
-    
-
-=======
     print(name, fc.get_shape().as_list())
     return fc
    
@@ -186,7 +133,7 @@ def _fc_Last(name, in_, outsize, dropout=1.0, reuse=False):
         # Move everything into depth so we can perform a single matrix multiply.
         
         insize = in_.get_shape().as_list()[-1]
-        weights = _variable_with_weight_decay('weights', shape=[insize, outsize], wd=1)
+        weights = _variable_with_weight_decay('weights', shape=[insize, outsize], wd=0.000)
         biases = _variable_on_cpu('biases', [outsize], tf.constant_initializer(0.0)) ##Amin
         fc = tf.add(tf.matmul(in_, weights), biases, name=scope.name)
         fc = tf.nn.dropout(fc, dropout)
@@ -197,33 +144,17 @@ def _fc_Last(name, in_, outsize, dropout=1.0, reuse=False):
 
     print(name, fc.get_shape().as_list())
     return fc
->>>>>>> Initial. works fine
 
 def inference_multiview(views, n_classes, keep_prob):
     """
     views: N x V x W x H x C tensor
     """
     n_views = views.get_shape().as_list()[1] 
-<<<<<<< HEAD
-
-=======
     #n_views = 1 ##Amin
->>>>>>> Initial. works fine
     # transpose views : (NxVxWxHxC) -> (VxNxWxHxC)
     views = tf.transpose(views, perm=[1, 0, 2, 3, 4])
     
     view_pool = []
-<<<<<<< HEAD
-    for i in xrange(n_views):
-        # set reuse True for i > 0, for weight-sharing
-        reuse = (i != 0)
-        view = tf.gather(views, i) # NxWxHxC
-
-        conv1 = _conv('conv1', view, [11, 11, 3, 96], [1, 4, 4, 1], 'VALID', reuse=reuse)
-        lrn1 = None
-        pool1 = _maxpool('pool1', conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='VALID')
-
-=======
     for i in range(n_views):
         # set reuse True for i > 0, for weight-sharing
         reuse = (i != 0)
@@ -231,11 +162,11 @@ def inference_multiview(views, n_classes, keep_prob):
         
         ##Amin
         #print(view.shape)
-       
+        
         with tf.device('/gpu:0'):
             view = augmentImages(view, 
                 horizontal_flip=False, vertical_flip=False, translate = 64, rotate=30, crop_probability=0, mixup=0)
-           
+            
         input_Image_Sample = tf.summary.image(
             'input_Image_Sample',
             view,
@@ -243,11 +174,10 @@ def inference_multiview(views, n_classes, keep_prob):
             collections=None,
             family=None)
         
-        conv1 = _conv('conv1', view, [11, 11, 3, 96], [1, 4, 4, 1], 'VALID', reuse=reuse) #Amin greyscale [11, 11, 3, 96]
+        conv1 = _conv('conv1', view, [11, 11, 3, 96], [1, 4, 4, 1], 'VALID', reuse=reuse)
         lrn1 = None
         pool1 = _maxpool('pool1', conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='VALID') ##Amin strides=[1, 2, 2, 1]
         
->>>>>>> Initial. works fine
         conv2 = _conv('conv2', pool1, [5, 5, 96, 256], group=2, reuse=reuse)
         lrn2 = None
         pool2 = _maxpool('pool2', conv2, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='VALID')
@@ -258,21 +188,6 @@ def inference_multiview(views, n_classes, keep_prob):
 
         pool5 = _maxpool('pool5', conv5, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='VALID')
         
-<<<<<<< HEAD
-        dim = np.prod(pool5.get_shape().as_list()[1:])
-        reshape = tf.reshape(pool5, [-1, dim])
-        
-        view_pool.append(reshape)
-
-
-    pool5_vp = _view_pool(view_pool, 'pool5_vp')
-    print 'pool5_vp', pool5_vp.get_shape().as_list()
-
-
-    fc6 = _fc('fc6', pool5_vp, 4096, dropout=keep_prob)
-    fc7 = _fc('fc7', fc6, 4096, dropout=keep_prob)
-    fc8 = _fc('fc8', fc7, n_classes)
-=======
         dim = np.prod(pool5.get_shape().as_list()[1:]) ##Amin pool5
         reshape = tf.reshape(pool5, [-1, dim]) ##Amin pool5
         #print(dim)
@@ -287,24 +202,16 @@ def inference_multiview(views, n_classes, keep_prob):
     fc7 = _fc('fc7', fc6, 4096, dropout=keep_prob)
     fc8 = _fc_Last('fc8', fc7, n_classes)
     print('Classes', fc8.get_shape().as_list())
->>>>>>> Initial. works fine
 
     return fc8 
     
 
 def load_alexnet_to_mvcnn(sess, caffetf_modelpath):
     """ caffemodel: np.array, """
-<<<<<<< HEAD
-
-    caffemodel = np.load(caffetf_modelpath)
-    data_dict = caffemodel.item()
-    for l in ['conv1', 'conv2', 'conv3', 'conv4', 'conv5', 'fc6', 'fc7']:
-=======
     
     caffemodel = np.load(caffetf_modelpath, encoding = 'bytes')
     data_dict = caffemodel.item()
     for l in ['conv1', 'conv2', 'conv3', 'conv4', 'conv5']:#, 'fc6', 'fc7']: ##Amin
->>>>>>> Initial. works fine
         name = l
         _load_param(sess, name, data_dict[l])
     
@@ -314,21 +221,13 @@ def _load_param(sess, name, layer_data):
 
     with tf.variable_scope(name, reuse=True):
         for subkey, data in zip(('weights', 'biases'), (w, b)):
-<<<<<<< HEAD
-            print 'loading ', name, subkey
-=======
             print('loading ', name, subkey)
->>>>>>> Initial. works fine
 
             try:
                 var = tf.get_variable(subkey)
                 sess.run(var.assign(data))
             except ValueError as e: 
-<<<<<<< HEAD
-                print 'varirable loading failed:', subkey, '(%s)' % str(e)
-=======
                 print('varirable loading failed:', subkey, '(%s)' % str(e))
->>>>>>> Initial. works fine
 
 
 def _view_pool(view_features, name):
@@ -336,19 +235,12 @@ def _view_pool(view_features, name):
     for v in view_features[1:]:
         v = tf.expand_dims(v, 0)
         vp = tf.concat([vp, v], 0)
-<<<<<<< HEAD
-    print 'vp before reducing:', vp.get_shape().as_list()
-=======
     print('vp before reducing:', vp.get_shape().as_list())
->>>>>>> Initial. works fine
     vp = tf.reduce_max(vp, [0], name=name)
     return vp 
 
 
 def loss(fc8, labels):
-<<<<<<< HEAD
-    l = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=fc8)
-=======
     #l = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=fc8)
     oneHotLabels = tf.one_hot(
     indices = labels,
@@ -362,7 +254,6 @@ def loss(fc8, labels):
     #tf.Print(class1s,[class1s],message="This is a: "'ALL ZEROS!!!')
     
     
->>>>>>> Initial. works fine
     l = tf.reduce_mean(l)
     
     tf.add_to_collection('losses', l)
@@ -388,11 +279,7 @@ def _add_loss_summaries(total_loss):
     # Compute the moving average of all individual losses and the total loss.
     loss_averages = tf.train.ExponentialMovingAverage(0.9, name='avg')
     losses = tf.get_collection('losses')
-<<<<<<< HEAD
-    print 'losses:', losses
-=======
     print('losses:', losses)
->>>>>>> Initial. works fine
     loss_averages_op = loss_averages.apply(losses + [total_loss])
     # Attach a scalar summary to all individual losses and the total loss; do the
     # same for the averaged version of the losses.
@@ -419,10 +306,7 @@ def train(total_loss, global_step, data_size):
 
     with tf.control_dependencies([loss_averages_op]):
         opt = tf.train.AdamOptimizer(lr)
-<<<<<<< HEAD
-=======
         #opt = tf.train.GradientDescentOptimizer(lr)
->>>>>>> Initial. works fine
         grads = opt.compute_gradients(total_loss)
 
     
